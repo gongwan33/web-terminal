@@ -26,6 +26,7 @@ $config['header'] = printBlock('
 Welcome to JoyBin Terminal!
 Please use the command \'help\' to see the available commands. 
 
+Powered By React
 »¦ICP±¸16049910ºÅ-1
 -----------------------------------------------------------------------
 ');

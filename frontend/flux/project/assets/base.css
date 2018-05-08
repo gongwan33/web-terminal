@@ -1,0 +1,73 @@
+html,
+body {
+	font-family: "Times New Roman", Times, serif, monospace;
+	margin: 0;
+	padding: 5px;
+}
+
+.tm-scn-row {
+	word-wrap: break-word;
+}
+
+.tm-cmdl {
+	position: relative;
+	width: 100%;
+}
+
+.tm-cmdl-prompt {
+	left: 0;
+	position: absolute;
+	z-index: 3;
+}
+
+.tm-cmdl-input {
+	background-color: transparent;
+	border: none;
+	font-family: "Times New Roman", Times, serif, monospace;
+	font-size: 1rem;
+	height: 0;
+	left: 0;
+	resize: none;
+	text-indent: 1rem;
+	padding: 0;
+	position: absolute;
+	width: 100%;
+	z-index: 1;
+}
+
+.tm-cmdl-input:focus {
+	border: none;
+	outline: none;
+	position: absolute;
+}
+
+.tm-cmdl-input-show {
+	border: none;
+	font-family: "Times New Roman", Times, serif, monospace;
+	font-size: 1rem;
+	min-height: 1.5em;
+	left: 0;
+	resize: none;
+	text-indent: 1rem;
+	padding: 0;
+	position: absolute;
+	width: 100%;
+	word-wrap: break-word;
+	z-index: 1;
+}
+
+.tm-cmdl-input-caret {
+	animation: blinker 1s linear infinite;
+	height: 1em;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	width: 1ch;
+	z-index: 5;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}

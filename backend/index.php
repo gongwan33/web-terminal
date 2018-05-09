@@ -26,7 +26,6 @@ $config['header'] = printBlock('
 Welcome to JoyBin Terminal!
 Please use the command \'help\' to see the available commands. 
 
-Powered By React
 »¦ICP±¸16049910ºÅ-1
 -----------------------------------------------------------------------
 ');
@@ -42,7 +41,11 @@ $app->post('/init-info', function (Request $request, Response $response, array $
     $theme = $this->settings['theme'];
     
     $data = [
-        'line' => $header,
+        'lines' => [
+            ['content' => $header, 'style' => ['color' => 'red', 'fontSize' => '1.2em']],
+            ['content' => 'Powered By React', 'style' => ['color' => 'blue']],
+            ['content' => '&nbsp;', 'style' => []],
+        ],
         'prompt' => $prompt,
         'theme' => $theme,
     ];
@@ -51,23 +54,6 @@ $app->post('/init-info', function (Request $request, Response $response, array $
     
     return $newResp;
 });
-
-//only for test
-    $app->get('/init-info', function (Request $request, Response $response, array $args) {
-        $header = $this->settings['header'];
-        $prompt = $this->settings['prompt'];
-        $theme = $this->settings['theme'];
-        
-        $data = [
-            'line' => $header,
-            'prompt' => $prompt,
-            'theme' => $theme,
-        ];
-        
-        $newResp = $response->withJson($data);
-        
-        return $newResp;
-    });
 
 $app->run();
     

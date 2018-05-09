@@ -51,9 +51,13 @@ class TerminalStore extends ReduceStore {
           return state;
 
       case TerminalActionTypes.TM_ADDLINE:
+    	  if(action.lines == null || typeof action.lines == 'undefined') {
+    		  action.lines = [];
+    	  }
+    	  
     	  state = state.setIn(['lines', TerminalStore.getLineId()],  new Terminal({
         	  id: TerminalStore.getLineId(),
-        	  line: action.line,
+        	  sublines: action.lines,
           }));
     	  return state;
       default:

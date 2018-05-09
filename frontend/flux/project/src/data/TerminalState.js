@@ -14,8 +14,7 @@ import Immutable from 'immutable';
 
 const Terminal = Immutable.Record({
     id: 0,
-    line: '',
-    style: Immutable.Map({}),
+    sublines: [],
 });
 
 export default Terminal;

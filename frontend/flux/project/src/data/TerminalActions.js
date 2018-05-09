@@ -51,7 +51,7 @@ const Actions = {
 		          
 		          TerminalDispatcher.dispatch({
                       type: TerminalActionTypes.TM_ADDLINE,
-                      line: data.line,
+                      lines: data.lines,
                   });
 		        
 		      }); 
@@ -68,7 +68,9 @@ const Actions = {
 		  
 		  TerminalDispatcher.dispatch({
               type: TerminalActionTypes.TM_ADDLINE,
-              line: Actions.prompt + '&nbsp;' + ev.target.value,
+              lines: [
+            	      {content: Actions.prompt + '&nbsp;' + ev.target.value, style: {}}
+            	     ],
           });
 		  
 		  if(ev.target.value.length > 0) {

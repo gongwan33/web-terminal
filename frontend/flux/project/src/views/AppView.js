@@ -85,9 +85,15 @@ class Screen extends React.Component {
 		return (
 			<div className="tm-scn">
 			    {
-			    	[...this.props.terminal.get('lines').values()].map( term => (
-			    	    <div className="tm-scn-row" key={term.id} dangerouslySetInnerHTML={{__html: term.line}}></div>		
-			    	))
+			    	[...this.props.terminal.get('lines').values()].map( 
+			    		term => (
+			    			[...term.get('sublines').values()].map(
+			    			    (line, index) => (
+			    				    <div className="tm-scn-row" key={term.id + '-' + index} dangerouslySetInnerHTML={{__html: line.content}} style={line.style}></div>
+			    		        )
+			    		    )
+			    		)				    	    
+			    	)
 			    }
 			</div>
 		)

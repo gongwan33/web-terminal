@@ -17,11 +17,38 @@ function scrollToBottom() {
 	window.scrollTo(0, document.body.scrollHeight);
 }
 
+function cmdProcessingStatus(el, finished) {
+	let cmdl = el.parentElement;
+	let processInfo = cmdl.parentElement.getElementsByClassName('tm-process-info')[0];
+	
+	if(!finished) {
+		cmdl.style.display = 'none';
+		processInfo.style.display = "block";
+		processInfo.innerHTML = "Processing...";
+		processInfo.innerText = "Processing...";
+	} else {
+		cmdl.style.display = 'block';
+		processInfo.style.display = "none";
+	}
+}
+
 const Actions = {
   prompt: ">",
   theme: "homebrew",
+  path: "/",
   historyCmd: [],
   histroyCmdCursor: 0,
+  addLines(lines) {
+      TerminalDispatcher.dispatch({
+          type: TerminalActionTypes.TM_ADDLINE,
+          lines: lines,
+      });
+  },
+  addErrLine(str = '') {
+	  Actions.addLines([
+		  {content: str, style: {color: 'red'}},
+	  ])
+  },
   terminalOnload() {
 	  let initInfoPromise = fetch(Config.siteurl + '/backend/init-info', {
 		  method: 'POST',
@@ -33,28 +60,27 @@ const Actions = {
 	  
 	  initInfoPromise.then(function (response){
 		  if (response.status !== 200) {
-		          console.log('Fetch error' + response.status);
-		          return;
-		      }
+		      console.log('Fetch error' + response.status);
+		      return;
+		  }
 
 		      // Examine the text in the response
-		      response.json().then(function(data) {
-		          //console.log(data);
-		          Actions.prompt = data.prompt;
-		          Actions.theme = data.theme;
-		          
-		          TerminalDispatcher.dispatch({
-                      type: TerminalActionTypes.TM_ONLOAD,
-                      prompt: data.prompt,
-                      theme: data.theme,
-                  });
-		          
-		          TerminalDispatcher.dispatch({
-                      type: TerminalActionTypes.TM_ADDLINE,
-                      lines: data.lines,
-                  });
-		        
-		      }); 
+		  response.json().then(function(data) {   
+	          //console.log(data);
+	          Actions.prompt = data.prompt + ' ' + data.path + ' >';
+	          Actions.theme = data.theme;
+	          Actions.path = data.path;
+	          
+	          TerminalDispatcher.dispatch({
+                  type: TerminalActionTypes.TM_ONLOAD,
+                  prompt: Actions.prompt,
+                  theme: Actions.theme,
+              });
+	          
+	          Actions.addLines(data.lines);
+		  }).catch(function(err) {
+			  Actions.addErrLine('Response parsing error: ' + err);
+		  });
 	  });
   },
   
@@ -66,17 +92,15 @@ const Actions = {
 	  if(ev.key == "Enter") {
 		  if(ev.preventDefault) ev.preventDefault();
 		  
-		  TerminalDispatcher.dispatch({
-              type: TerminalActionTypes.TM_ADDLINE,
-              lines: [
-            	      {content: Actions.prompt + '&nbsp;' + ev.target.value, style: {}}
-            	     ],
-          });
+		  Actions.addLines([
+			  {content: Actions.prompt + '&nbsp;' + ev.target.value, style: {}}
+		  ]);
 		  
 		  if(ev.target.value.length > 0) {
 		      Actions.historyCmd.push(ev.target.value);
 		  }
-		  
+		  		  
+		  let cmd = ev.target.value;
 		  ev.target.value = "";
 		  
 		  //Drop too old cmds.
@@ -86,6 +110,48 @@ const Actions = {
 		  
 		  Actions.historyCmdCursor = Actions.historyCmd.length;
 		  
+		  if(cmd.length <= 0) {
+			  return;
+		  }
+		  
+		  cmdProcessingStatus(ev.target, false);
+		  
+		  let promise = fetch(Config.siteurl + '/backend/parse-cmd', {
+			  method: 'POST',
+			  headers: {
+			    'Accept': 'application/json',
+			    'Content-Type': 'application/json',
+			  },
+			  body: JSON.stringify({'cmd': cmd}),
+			});
+		  
+		  (function(target) {
+			  promise.then(function(response) {
+				  if(typeof response.status != 'undefined' && response.status != 200) {
+					  Actions.addErrLine('Response Error: ' + response.status);
+				  } else if(typeof response.status != 'undefined' && response.status == 200){
+					  response.json().then(function(data) {
+						  //console.log(data);
+						  if(typeof data.lines != 'undefined' && data.lines != null) {
+							  Actions.addLines(data.lines);
+						  } else {
+							  Actions.addErrLine('No response lines.');
+						  }
+					  }).catch(function(err) {
+						  Actions.addErrLine('Response parsing error: ' + err);
+					  });
+				  } else {
+					  Actions.addErrLine('Unkown Error.');  
+				  }
+				  
+				  cmdProcessingStatus(target, true);
+			  });
+			  
+			  promise.catch(err => {
+				  cmdProcessingStatus(target, true);  
+			  });
+		  })(ev.target);
+
 	  } else if(ev.key == "ArrowUp") {
 		  if(ev.preventDefault) ev.preventDefault();
 		  

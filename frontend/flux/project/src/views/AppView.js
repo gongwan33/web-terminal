@@ -27,6 +27,7 @@ class Terminal extends React.Component {
         	    <StyleBlock {...this.props} />
         	    <Screen {...this.props} />
         	    <CmdLine {...this.props} />
+        	    <div className="tm-process-info" style={{display: 'none'}}></div>
         	</div>
         )
                 
@@ -53,6 +54,10 @@ class StyleBlock extends React.Component {
 			    	    background-color: black;
 			        }
 			        
+			        .tm-cmdl-input {
+			            caret-color: black;
+			        }
+			        
 			        .tm-cmdl-input-caret {
 			            background-color: #09b400;
 			        }
@@ -64,7 +69,7 @@ class StyleBlock extends React.Component {
 	    
 	    styleStr += `
 	        .tm-cmdl-input-show {
-	            text-indent: ` + (prompt.length + 1) + `ch;
+	            text-indent: ` + (prompt.length) + `ch;
 	        }
 	    `;
 	    
@@ -87,7 +92,7 @@ class Screen extends React.Component {
 			    {
 			    	[...this.props.terminal.get('lines').values()].map( 
 			    		term => (
-			    			[...term.get('sublines').values()].map(
+			    			term.get('sublines').map(
 			    			    (line, index) => (
 			    				    <div className="tm-scn-row" key={term.id + '-' + index} dangerouslySetInnerHTML={{__html: line.content}} style={line.style}></div>
 			    		        )
@@ -103,6 +108,7 @@ class Screen extends React.Component {
 class CmdLine extends React.Component {
 	transFocus(ev) {
 		let input = ev.target.parentElement.getElementsByClassName('tm-cmdl-input')[0];
+		
 		input.focus();
 	}
 	
@@ -126,7 +132,7 @@ class CmdLine extends React.Component {
 			<div className="tm-cmdl">
 			    <span className="tm-cmdl-prompt">{ this.props.terminal.get('prompt')}</span>
 			    <textarea className="tm-cmdl-input" onKeyDown={this.props.onKeyDown} onMouseDown={this.terminalInputOnMouseDown} onKeyUp={this.props.onKeyUp} onBlur={this.inputLooseFocus}></textarea>
-			    <span className="tm-cmdl-input-show" onFocus={this.transFocus}>
+			    <span className="tm-cmdl-input-show" onFocus={this.transFocus} onClick={this.transFocus}>
 			        <span className="tm-cmdl-input-caret"></span>
 			    </span>
 			</div>

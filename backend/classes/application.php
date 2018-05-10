@@ -9,7 +9,11 @@ class Application {
         return 'normal';       
     }
     
-    public function man() {
+    public static function man() {
         return 'No specified instructions.';
+    }
+    
+    public static function desc() {
+        return 'This application has no description.';   
     }
 }

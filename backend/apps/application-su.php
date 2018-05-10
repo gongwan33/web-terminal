@@ -20,7 +20,11 @@ class su {
         
     }
     
-    public function man() {
+    public static function man() {
         return 'Usage: su [username]';
+    }
+    
+    public static function desc() {
+        return 'Longin Application.';
     }
 }

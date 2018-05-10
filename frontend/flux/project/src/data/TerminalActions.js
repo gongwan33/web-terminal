@@ -180,8 +180,9 @@ const Actions = {
 	  } 
 		  
 	  let inputShow = ev.target.parentElement.getElementsByClassName('tm-cmdl-input-show')[0];
-	  inputShow.innerHTML = ev.target.value;
-	  inputShow.innerText = ev.target.value;
+	  let showText = ev.target.value.replace(' ', '&nbsp;');
+	  inputShow.innerHTML = showText;
+	  inputShow.innerText = showText;
 
   },
   
@@ -197,8 +198,9 @@ const Actions = {
 	  
 	  let caretPosition = ev.target.selectionStart;
 	  let inputShow = ev.target.parentElement.getElementsByClassName('tm-cmdl-input-show')[0];
-	  inputShow.innerHTML = ev.target.value;
-	  inputShow.innerText = ev.target.value;
+	  let showText = ev.target.value.replace(' ', '&nbsp;');
+	  inputShow.innerHTML = showText;
+	  inputShow.innerText = showText;
 	  
 	  let caretSpan = document.createElement("span");
 	  caretSpan.className = "tm-cmdl-input-caret";

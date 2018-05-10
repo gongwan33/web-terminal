@@ -6,6 +6,7 @@ require_once 'vendor/autoload.php';
 require_once 'classes/print.php';
 require_once 'configuration.php';
 require_once 'classes/applicationManager.php';
+require_once 'classes/utils.php';
 
 $app = new \Slim\App(['settings' => $config]);
 
@@ -43,16 +44,30 @@ $app->post('/parse-cmd', function (Request $request, Response $response) {
     $data = $request->getParsedBody();
     
     if(!is_array($data) || !array_key_exists('cmd', $data)) {
-        return $response->withJson(['lines' => [['content' => 'Empty Commands.', 'style' => []]]]);
+        return genReturnInfo($response, 'Empty Commands.', 'info');
     }
     
     $cmd = filter_var($data['cmd'], FILTER_SANITIZE_STRING);
     $logger->debug('Parse cmd '.$cmd);
     
+    $consists = explode(' ', $cmd);
+    if(count($consists) < 1) {
+        return genReturnInfo($response, 'Command format error.', 'error');
+    }
+    
+    $appName = trim($consists[0]);
+    $appArgs = array_slice($consists, 1);
+    
+    $appManager = ApplicationManager::getApplicationManager();
+    if($appManager->isApp($appName)){
+        $calledApp = new $appName($appArgs);
+        $output = $calledApp->excute();
+    } else {
+        return genReturnInfo($response, 'No such command: '.$cmd, 'error');
+    }
+    
     $respArry = [
-        'lines' => [
-            ['content' => $cmd, 'style' => []],
-        ]
+        'lines' => $output,
     ];
     
     $newResp = $response->withJson($respArry);

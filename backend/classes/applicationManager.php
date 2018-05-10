@@ -44,4 +44,8 @@ class ApplicationManager {
     public function getAppList() {
         return $this->applications;
     }
+    
+    public function isApp($name) {
+        return array_key_exists($name, $this->applications);
+    }
 }

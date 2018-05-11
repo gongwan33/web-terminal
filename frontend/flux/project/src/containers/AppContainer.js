@@ -25,6 +25,7 @@ function getState() {
       terminal: TerminalStore.getState(),
       onKeyDown: TerminalActions.TerminalOnKeyDown,
       onKeyUp: TerminalActions.TerminalOnKeyUp,
+      onTextAreaChange: TerminalActions.TerminalOnTextAreaChange,
     };
 }
 

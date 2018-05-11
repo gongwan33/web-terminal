@@ -25,6 +25,9 @@ class TerminalStore extends ReduceStore {
   getInitialState() {
 	  let state = Immutable.Map({
 		  'lines': Immutable.OrderedMap(),
+		  'theme': 'homebrew',
+		  'prompt': 'JoyBin />',
+		  'textOnShow': '<span class="tm-cmdl-input-caret"></span>',
 	  });
       return state;
   }
@@ -59,6 +62,12 @@ class TerminalStore extends ReduceStore {
         	  id: TerminalStore.getLineId(),
         	  sublines: action.lines,
           }));
+    	  return state;
+    	  
+      case TerminalActionTypes.TM_SET_TEXTONSHOW:
+    	  if(typeof action.textOnShow != 'undefined' && action.textOnShow != null) {
+    		  state = state.set('textOnShow', action.textOnShow);
+    	  }
     	  return state;
       default:
         return state;

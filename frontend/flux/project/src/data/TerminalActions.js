@@ -12,6 +12,7 @@
 import TerminalActionTypes from './TerminalActionTypes';
 import TerminalDispatcher from './TerminalDispatcher';
 import Config from '../Config';
+import * as Utils from '../utils/utils';
 
 function scrollToBottom() {
 	window.scrollTo(0, document.body.scrollHeight);
@@ -20,6 +21,7 @@ function scrollToBottom() {
 function cmdProcessingStatus(el, finished) {
 	let cmdl = el.parentElement;
 	let processInfo = cmdl.parentElement.getElementsByClassName('tm-process-info')[0];
+	let cmdlInput = cmdl.getElementsByClassName('tm-cmdl-input')[0];
 	
 	if(!finished) {
 		cmdl.style.display = 'none';
@@ -29,6 +31,8 @@ function cmdProcessingStatus(el, finished) {
 	} else {
 		cmdl.style.display = 'block';
 		processInfo.style.display = "none";
+		
+		cmdlInput.focus();
 	}
 }
 
@@ -46,8 +50,14 @@ const Actions = {
   },
   addErrLine(str = '') {
 	  Actions.addLines([
-		  {content: str, style: {color: 'red'}},
+		  {content: Utils.htmlspecialchars(str), style: {color: 'red'}},
 	  ])
+  },
+  setTextOnShow(txt) {
+	  TerminalDispatcher.dispatch({
+		  type: TerminalActionTypes.TM_SET_TEXTONSHOW,
+		  textOnShow: txt,
+	  });
   },
   terminalOnload() {
 	  let initInfoPromise = fetch(Config.siteurl + '/backend/init-info', {
@@ -84,16 +94,16 @@ const Actions = {
 	  });
   },
   
-  TerminalOnKeyDown(ev) { 
+  TerminalOnKeyDown(ev) {
 	  ev.stopPropagation();
-	  
 	  scrollToBottom();
 	  
 	  if(ev.key == "Enter") {
 		  if(ev.preventDefault) ev.preventDefault();
-		  
+		  		  
+		  ev.target.value = Utils.trimMeaningChars(ev.target.value);
 		  Actions.addLines([
-			  {content: Actions.prompt + '&nbsp;' + ev.target.value, style: {}}
+			  {content: Actions.prompt + '&nbsp;' + Utils.htmlspecialchars(ev.target.value), style: {}}
 		  ]);
 		  
 		  if(ev.target.value.length > 0) {
@@ -179,43 +189,51 @@ const Actions = {
 
 	  } 
 		  
-	  let inputShow = ev.target.parentElement.getElementsByClassName('tm-cmdl-input-show')[0];
-	  let showText = ev.target.value.replace(' ', '&nbsp;');
-	  inputShow.innerHTML = showText;
-	  inputShow.innerText = showText;
-
+	  Actions.TerminalOnTextAreaChange(ev);
   },
   
   TerminalOnKeyUp(ev) {
 	  ev.stopPropagation();
-	  
 	  scrollToBottom();
-	  
-	  if(ev.key == 'Enter') {
+	 
+	  if(ev.key == "Enter") {
 		  if(ev.preventDefault) ev.preventDefault();
-		  ev.target.value = "";
+		  return false;
 	  }
 	  
+	  Actions.TerminalOnTextAreaChange(ev);
+  },
+  
+  TerminalOnTextAreaChange(ev) {
 	  let caretPosition = ev.target.selectionStart;
-	  let inputShow = ev.target.parentElement.getElementsByClassName('tm-cmdl-input-show')[0];
-	  let showText = ev.target.value.replace(' ', '&nbsp;');
-	  inputShow.innerHTML = showText;
-	  inputShow.innerText = showText;
-	  
-	  let caretSpan = document.createElement("span");
-	  caretSpan.className = "tm-cmdl-input-caret";
-	  
-	  let inputShowText = inputShow.childNodes[0];
-	  
-	  if(typeof inputShowText != 'undefined') {
+	  let showText = ev.target.value;
+	  let caretSpan = '<span class="tm-cmdl-input-caret"></span>';
+	  let inputShowText = showText.slice(0);
+
+	  inputShowText = Utils.trimMeaningChars(inputShowText);
+	  if(typeof inputShowText != 'undefined' && inputShowText != '') {
 		  if(inputShowText.length < caretPosition) {
 			  caretPosition = inputShowText.length;
 		  }
-	      inputShow.insertBefore(caretSpan, inputShowText.splitText(caretPosition));
+		  let firstPart = '';
+		  if(inputShowText.length > caretPosition) {
+			  firstPart = Utils.htmlspecialchars(inputShowText.slice(0, caretPosition));
+		  } else {
+			  firstPart = Utils.htmlspecialchars(inputShowText);
+		  }
+		  
+		  let secondPart = '';
+		  if(inputShowText.length > caretPosition) {
+		      secondPart = Utils.htmlspecialchars(inputShowText.slice(caretPosition));
+		  }
+		  
+	      inputShowText = firstPart + caretSpan + secondPart;
 	  } else {
-		  inputShow.appendChild(caretSpan);
+		  inputShowText = '';
+		  inputShowText += caretSpan;
 	  }
 
+	  Actions.setTextOnShow(inputShowText);	  
   },
   
 };

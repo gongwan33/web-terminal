@@ -11,6 +11,7 @@
 
 import React from 'react';
 import classnames from 'classnames';
+import TerminalActions from '../data/TerminalActions';
 
 function AppView(props) {
   return (
@@ -106,9 +107,12 @@ class Screen extends React.Component {
 }
 
 class CmdLine extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+	
 	transFocus(ev) {
 		let input = ev.target.parentElement.getElementsByClassName('tm-cmdl-input')[0];
-		
 		input.focus();
 	}
 	
@@ -120,21 +124,31 @@ class CmdLine extends React.Component {
 	}
 	 
 	inputLooseFocus(ev) {
-	    let inputShow = ev.target.parentElement.getElementsByClassName('tm-cmdl-input-show')[0];
-	    let caretSpan = inputShow.getElementsByClassName('tm-cmdl-input-caret')[0];
-	    if(typeof caretSpan != 'undefined') {
-	        caretSpan.remove();
-	    }
+		let inputShow = ev.target.parentElement.getElementsByClassName('tm-cmdl-input-show')[0];
+		let carets = inputShow.getElementsByClassName('tm-cmdl-input-caret');
+		
+		if(typeof carets != 'undefined' && carets.length > 0) {
+			let caret = carets[0];
+			caret.style.display = 'none';
+		}
+	}
+	
+	inputGetFocus(ev) {
+		let inputShow = ev.target.parentElement.getElementsByClassName('tm-cmdl-input-show')[0];
+		let carets = inputShow.getElementsByClassName('tm-cmdl-input-caret');
+		
+		if(typeof carets != 'undefined' && carets.length > 0) {
+			let caret = carets[0];
+			caret.style.display = 'inline';
+		}
 	}
 	
 	render() {
 		return (
 			<div className="tm-cmdl">
 			    <span className="tm-cmdl-prompt">{ this.props.terminal.get('prompt')}</span>
-			    <textarea className="tm-cmdl-input" onKeyDown={this.props.onKeyDown} onMouseDown={this.terminalInputOnMouseDown} onKeyUp={this.props.onKeyUp} onBlur={this.inputLooseFocus}></textarea>
-			    <span className="tm-cmdl-input-show" onFocus={this.transFocus} onClick={this.transFocus}>
-			        <span className="tm-cmdl-input-caret"></span>
-			    </span>
+			    <textarea className="tm-cmdl-input" onChange={this.props.onTextAreaChange} onKeyDown={this.props.onKeyDown} onFocus={this.inputGetFocus} onMouseDown={this.terminalInputOnMouseDown} onKeyUp={this.props.onKeyUp} onBlur={this.inputLooseFocus}></textarea>
+			    <span className="tm-cmdl-input-show" dangerouslySetInnerHTML={{__html: this.props.terminal.get('textOnShow')}} onFocus={this.transFocus} onClick={this.transFocus}></span>
 			</div>
 		)
 	}

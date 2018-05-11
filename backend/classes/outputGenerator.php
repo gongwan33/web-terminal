@@ -3,7 +3,7 @@ class OutputGenerator {
     private $output = [];
     public function addLine($content, $style = []) {
         $this->output[] = [
-            'content' => $content,
+            'content' => htmlentities($content),
             'style' => $style,
         ];
     }

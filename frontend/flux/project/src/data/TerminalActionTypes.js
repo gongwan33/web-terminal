@@ -12,6 +12,7 @@
 const ActionTypes = {
   TM_ONLOAD: 'TM_ONLOAD',
   TM_ADDLINE: 'TM_ADDLINE',
+  TM_SET_TEXTONSHOW: 'TM_SET_TEXTONSHOW',
 };
 
 export default ActionTypes;

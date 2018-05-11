@@ -16,7 +16,7 @@ function genReturnInfo($response, $content, $type) {
     return  $response->withJson([
         'lines' => [
             [
-                'content' => $content, 
+                'content' => htmlentities($content), 
                 'style' => $style,             
             ]
         ]

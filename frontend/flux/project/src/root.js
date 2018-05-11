@@ -28,3 +28,4 @@ function lockFocusToInput(ev) {
 
 window.onload = lockFocusToInput;
 document.onkeydown = lockFocusToInput;
+document.onkeyup = lockFocusToInput;

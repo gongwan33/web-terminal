@@ -11,6 +11,10 @@ class ApplicationManager {
             self::$instance = new ApplicationManager();
         }
         
+        if(session_status() != PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+        
         return self::$instance;
     }
     

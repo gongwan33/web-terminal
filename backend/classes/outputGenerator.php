@@ -8,6 +8,12 @@ class OutputGenerator {
         ];
     }
     
+    public function addLines($contents) {
+        foreach ($contents as $content) {
+            array_push($this->output, $content);
+        }
+    }
+    
     public function getOutput() {
         return $this->output;
     }

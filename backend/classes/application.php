@@ -9,6 +9,10 @@ class Application {
         return 'normal';       
     }
     
+    public function feedback() {
+        return null;
+    }
+    
     public static function man() {
         return 'No specified instructions.';
     }

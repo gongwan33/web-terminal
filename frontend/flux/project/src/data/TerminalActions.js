@@ -147,6 +147,34 @@ const Actions = {
 						  } else {
 							  Actions.addErrLine('No response lines.');
 						  }
+						  
+						  if(data.feedback) {
+							  let feedback = data.feedback;
+							  if(feedback.cmd) {
+							      switch(feedback.cmd) {
+							          case 'download':
+							        	  let alink = document.createElement('a');
+							        	  let oldlink = document.getElementById('download_temporary_link');
+							        	  if(oldlink) {
+							        		  oldlink.parentNode.removeChild(oldlink);  
+							        	  }
+							        	  
+							        	  alink.setAttribute('href', Config.siteurl + Config.downloadFolder + feedback.data);
+							        	  alink.setAttribute('target', '_blank');
+							        	  alink.setAttribute('id', 'download_temporary_link');
+							        	  alink.style.visibility = 'hidden';
+							        	  document.querySelector('body').appendChild(alink);
+							        	
+							        	  oldlink = document.getElementById('download_temporary_link');
+							        	  if(oldlink) {
+							        		  oldlink.click();
+							        		  oldlink.parentNode.removeChild(oldlink);  
+							        	  }
+
+							        	  break;
+							      }
+							  }
+						  }
 					  }).catch(function(err) {
 						  Actions.addErrLine('Response parsing error: ' + err);
 					  });

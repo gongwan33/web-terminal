@@ -62,12 +62,14 @@ $app->post('/parse-cmd', function (Request $request, Response $response) {
     if($appManager->isApp($appName)){
         $calledApp = new $appName($appArgs);
         $output = $calledApp->excute();
+        $feedback = $calledApp->feedback();
     } else {
         return genReturnInfo($response, 'No such command: '.$cmd, 'error');
     }
     
     $respArry = [
         'lines' => $output,
+        'feedback' => $feedback,
     ];
     
     $newResp = $response->withJson($respArry);

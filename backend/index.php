@@ -26,7 +26,7 @@ $app->post('/init-info', function (Request $request, Response $response, array $
     $data = [
         'lines' => [
             ['content' => $header, 'style' => ['color' => 'yellow']],
-            ['content' => 'This web terminal system is an open source project maintanced by JoyBin. Please refer to <a target="_blank" href="https://github.com/gongwan33/web-terminal">https://github.com/gongwan33/web-terminal</a> for more details.', 'style' => ['color' => 'blue']],
+            ['content' => 'This web terminal system is an open source project maintained by JoyBin. Please refer to <a target="_blank" href="https://github.com/gongwan33/web-terminal">https://github.com/gongwan33/web-terminal</a> for more details.', 'style' => ['color' => 'blue']],
             ['content' => '&nbsp;', 'style' => []],
         ],
         'prompt' => $prompt,
